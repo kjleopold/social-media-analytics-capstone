@@ -298,6 +298,7 @@ def save_to_csv(
     df.to_csv(
         output_file,
         index=False,
+        encoding="utf-8-sig",
     )
 
     return df

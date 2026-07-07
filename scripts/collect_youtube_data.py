@@ -7,6 +7,7 @@ Author: Kellie J. Leopold
 Project: Social Media Analytics Capstone
 """
 
+from datetime import datetime
 import html
 import os
 from pathlib import Path
@@ -14,7 +15,25 @@ from typing import Any
 
 import pandas as pd
 from dotenv import load_dotenv
-from googleapiclient.discovery import build
+from googleapiclient.discovery import Resource, build
+
+
+# ============================================================
+# Project Configuration
+# ============================================================
+
+SEARCH_TERMS = [
+    "cooking",
+    "data analytics",
+    "finance",
+    "fitness",
+    "fortnite",
+    "minecraft",
+    "python programming",
+    "travel",
+]
+
+VIDEOS_PER_SEARCH = 100
 
 
 def load_api_key() -> str:
@@ -38,10 +57,19 @@ def load_api_key() -> str:
     return api_key
 
 
-def create_youtube_client(api_key: str):
+def create_youtube_client(
+    api_key: str,
+) -> Resource:
     """
     Create an authenticated YouTube Data API client.
+
+    Args:
+        api_key: YouTube Data API v3 developer key.
+
+    Returns:
+        An authenticated YouTube Data API client.
     """
+
     return build(
         serviceName="youtube",
         version="v3",
@@ -52,35 +80,65 @@ def create_youtube_client(api_key: str):
 def search_videos(
     youtube,
     query: str,
-    max_results: int = 5,
+    max_videos: int = 100,
 ) -> list[dict[str, Any]]:
     """
     Search YouTube for videos.
+
+    Args:
+        youtube: Authenticated YouTube Data API client.
+        query: Search term.
+        max_videos: Maximum number of videos to collect.
+
+    Returns:
+        A list of dictionaries containing video metadata.
     """
 
-    request = youtube.search().list(
-        q=query,
-        part="snippet",
-        type="video",
-        maxResults=max_results,
-    )
+    videos: list[dict[str, Any]] = []
 
-    response = request.execute()
+    next_page_token = None
 
-    videos = []
+    while len(videos) < max_videos:
 
-    for item in response["items"]:
-        video = {
-            "video_id": item["id"]["videoId"],
-            "title": html.unescape(item["snippet"]["title"]),
-            "description": html.unescape(
-                item["snippet"]["description"]
-            ),
-            "channel_title": item["snippet"]["channelTitle"],
-            "published_at": item["snippet"]["publishedAt"],
-        }
+        remaining = max_videos - len(videos)
 
-        videos.append(video)
+        request = youtube.search().list(
+            q=query,
+            part="snippet",
+            type="video",
+            maxResults=min(50, remaining),
+            pageToken=next_page_token,
+        )
+
+        response = request.execute()
+
+        for item in response["items"]:
+
+            video = {
+                "collection_date": datetime.now().isoformat(timespec="seconds"),
+                "search_term": query,
+                "video_id": item["id"]["videoId"],
+                "title": html.unescape(
+                    item["snippet"]["title"]
+                ),
+                "description": html.unescape(
+                    item["snippet"]["description"]
+                ),
+                "channel_title": item["snippet"]["channelTitle"],
+                "published_at": item["snippet"]["publishedAt"],
+            }
+
+            videos.append(video)
+
+        print(
+            f"Collected {len(videos)} "
+            f"videos for '{query}'..."
+        )
+
+        next_page_token = response.get("nextPageToken")
+
+        if not next_page_token:
+            break
 
     return videos
 
@@ -91,19 +149,48 @@ def get_video_statistics(
 ) -> dict[str, dict[str, Any]]:
     """
     Retrieve statistics and content details for videos.
+
+    The YouTube Data API allows a maximum of 50 video IDs
+    per request, so this function automatically processes
+    the IDs in batches and combines the results.
+
+    Args:
+        youtube: Authenticated YouTube Data API client.
+        video_ids: List of YouTube video IDs.
+
+    Returns:
+        Dictionary keyed by video ID.
     """
-
-    request = youtube.videos().list(
-        part="statistics,contentDetails",
-        id=",".join(video_ids),
-    )
-
-    response = request.execute()
 
     statistics: dict[str, dict[str, Any]] = {}
 
-    for item in response["items"]:
-        statistics[item["id"]] = item
+    batch_size = 50
+
+    total_batches = (
+        len(video_ids) + batch_size - 1
+    ) // batch_size
+
+    for batch_number, start in enumerate(
+        range(0, len(video_ids), batch_size),
+        start=1,
+    ):
+
+        batch_ids = video_ids[start:start + batch_size]
+
+        print(
+            f"Retrieving statistics "
+            f"(Batch {batch_number} of {total_batches})..."
+        )
+
+        request = youtube.videos().list(
+            part="statistics,contentDetails",
+            id=",".join(batch_ids),
+        )
+
+        response = request.execute()
+
+        for item in response["items"]:
+            statistics[item["id"]] = item
 
     return statistics
 
@@ -152,6 +239,47 @@ def enrich_videos(
         )
 
 
+def remove_duplicate_videos(
+    videos: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """
+    Remove duplicate videos based on video_id.
+
+    Keeps the first occurrence of each video.
+
+    Args:
+        videos: List of video dictionaries.
+
+    Returns:
+        List of unique video dictionaries.
+    """
+
+    unique_videos: list[dict[str, Any]] = []
+    seen_video_ids: set[str] = set()
+
+    for video in videos:
+
+        video_id = video["video_id"]
+
+        if video_id in seen_video_ids:
+            continue
+
+        seen_video_ids.add(video_id)
+        unique_videos.append(video)
+
+    duplicates_removed = len(videos) - len(unique_videos)
+
+    print(
+        f"\nRemoved {duplicates_removed} duplicate videos."
+    )
+
+    print(
+        f"Unique videos remaining: {len(unique_videos)}"
+    )
+
+    return unique_videos
+
+
 def save_to_csv(
     videos: list[dict[str, Any]],
     output_file: Path,
@@ -178,23 +306,33 @@ def save_to_csv(
 def main():
     """Run the YouTube data collection pipeline."""
 
+    start_time = datetime.now()
+
     print("Loading API key...")
 
     api_key = load_api_key()
-    print("✅ API key loaded successfully.")
+    print("API key loaded successfully.")
 
     youtube = create_youtube_client(api_key)
-    print("✅ Connected to the YouTube Data API.")
+    print("Connected to the YouTube Data API.")
 
-    videos = search_videos(
-        youtube=youtube,
-        query="data analytics",
-        max_results=5,
-    )
+    all_videos: list[dict[str, Any]] = []
+
+    for search_term in SEARCH_TERMS:
+
+        print(f"\nSearching for: {search_term}")
+
+        videos = search_videos(
+            youtube=youtube,
+            query=search_term,
+            max_videos=VIDEOS_PER_SEARCH,
+        )
+
+        all_videos.extend(videos)
 
     video_ids = [
         video["video_id"]
-        for video in videos
+        for video in all_videos
     ]
 
     statistics = get_video_statistics(
@@ -203,8 +341,12 @@ def main():
     )
 
     enrich_videos(
-        videos=videos,
+        videos=all_videos,
         statistics=statistics,
+    )
+
+    all_videos = remove_duplicate_videos(
+        all_videos
     )
 
     project_root = Path(__file__).resolve().parents[1]
@@ -213,19 +355,26 @@ def main():
         project_root
         / "data"
         / "raw"
-        / "youtube_search_results.csv"
+        / "youtube_video_metadata.csv"
     )
 
     df = save_to_csv(
-        videos=videos,
+        videos=all_videos,
         output_file=output_file,
     )
 
-    print(f"\n✅ Saved {len(df)} videos to:")
-    print(output_file)
+    end_time = datetime.now()
+    elapsed = end_time - start_time
+
+    print("\nCollection Summary")
+    print("------------------------------")
+    print(f"Search terms: {len(SEARCH_TERMS)}")
+    print(f"Unique videos collected: {len(df)}")
+    print(f"Output file: {output_file}")
+    print(f"Collection completed in: {elapsed}")
 
     print("\nDataset Preview:\n")
-    print(df)
+    print(df.head())
 
 
 if __name__ == "__main__":

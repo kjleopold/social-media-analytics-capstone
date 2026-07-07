@@ -6,7 +6,7 @@ Master's capstone project for the Master of Science in Data Analytics program at
 
 ## Project Overview
 
-This project investigates the factors associated with higher levels of social media engagement using data collected through the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, preparation, exploratory data analysis, validation, visualization, predictive analytics, and interpretation of results.
+This project investigates the factors associated with higher levels of social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, preparation, exploratory data analysis, validation, predictive modeling, and interpretation of results.
 
 ---
 
@@ -18,15 +18,15 @@ This project investigates the factors associated with higher levels of social me
 
 ## Objectives
 
-- Collect publicly available social media data using the YouTube Data API.
+- Collect publicly available YouTube video metadata using the YouTube Data API.
 - Prepare and clean the collected dataset.
-- Explore relationships between video characteristics and engagement metrics.
+- Explore relationships between video characteristics and engagement.
 - Identify variables associated with higher engagement.
-- Develop data-driven recommendations based on the findings.
+- Develop data-driven recommendations.
 
 ---
 
-## Technologies
+# Technologies
 
 - Python 3.14
 - uv
@@ -41,17 +41,7 @@ This project investigates the factors associated with higher levels of social me
 
 ---
 
-## Project Workflow
-
-1. Data Collection
-2. Data Preparation and Cleaning
-3. Exploratory Data Analysis
-4. Data Validation
-5. Results and Analysis
-
----
-
-## Repository Structure
+# Repository Structure
 
 ```text
 social-media-analytics-capstone/
@@ -61,12 +51,10 @@ social-media-analytics-capstone/
 │   └── processed/
 │
 ├── figures/
-│
 ├── notebooks/
-│
 ├── output/
-│
 ├── scripts/
+│   └── collect_youtube_data.py
 │
 ├── src/
 │   └── social_media_analytics/
@@ -84,28 +72,85 @@ social-media-analytics-capstone/
 
 ---
 
-# Project Setup
+# Project Workflow
 
-Clone the repository:
+1. Data Collection
+2. Data Preparation and Cleaning
+3. Exploratory Data Analysis
+4. Data Validation
+5. Results and Analysis
 
-```bash
-git clone https://github.com/kjleopold/social-media-analytics-capstone.git
-cd social-media-analytics-capstone
+---
+
+# Current Data Collection Pipeline
+
+```text
+Load API Key (.env)
+        │
+        ▼
+Create YouTube Client
+        │
+        ▼
+Search Videos
+        │
+        ▼
+Convert Results to Python Dictionaries
+        │
+        ▼
+Create pandas DataFrame
+        │
+        ▼
+Export CSV
 ```
 
-Synchronize the virtual environment and install all dependencies:
+Current output:
+
+```text
+data/raw/youtube_search_results.csv
+```
+
+---
+
+# Current Dataset
+
+The current data collection script retrieves the following information for each video:
+
+| Column | Description |
+|---------|-------------|
+| video_id | Unique YouTube video ID |
+| title | Video title |
+| description | Video description |
+| channel_title | Channel name |
+| published_at | Upload date and time |
+
+Future versions will collect:
+
+- View count
+- Like count
+- Comment count
+- Video duration
+- Category ID
+- Channel statistics
+
+---
+
+# Project Setup
+
+Synchronize dependencies:
 
 ```bash
 uv sync
 ```
 
-Activate the virtual environment (Windows PowerShell):
+Activate the virtual environment:
+
+### Windows PowerShell
 
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
 
-Deactivate the virtual environment:
+Deactivate:
 
 ```powershell
 deactivate
@@ -115,13 +160,13 @@ deactivate
 
 # Environment Management
 
-Install or update all project dependencies:
+Install all dependencies:
 
 ```bash
 uv sync
 ```
 
-Install a new package:
+Add a package:
 
 ```bash
 uv add <package-name>
@@ -133,7 +178,7 @@ Example:
 uv add plotly
 ```
 
-Update installed packages:
+Update packages:
 
 ```bash
 uv sync --upgrade
@@ -147,16 +192,38 @@ uv pip list
 
 ---
 
+# Running the Project
+
+Run the data collection script:
+
+```bash
+python scripts/collect_youtube_data.py
+```
+
+The script will:
+
+- Load the API key
+- Connect to the YouTube Data API
+- Search for videos
+- Convert results into structured Python dictionaries
+- Create a pandas DataFrame
+- Save the data as a CSV file
+- Display a preview of the collected data
+
+---
+
 # YouTube Data API
 
-This project uses the official **YouTube Data API v3**.
+The API key is stored securely in:
 
-The API key is stored securely in the `.env` file.
+```text
+.env
+```
 
 Example:
 
 ```text
-YOUTUBE_API_KEY=YOUR_API_KEY_HERE
+YOUTUBE_API_KEY=YOUR_API_KEY
 ```
 
 The `.env` file is ignored by Git and should never be committed.
@@ -165,7 +232,7 @@ The `.env` file is ignored by Git and should never be committed.
 
 # Git Workflow
 
-Check repository status:
+Check status:
 
 ```bash
 git status
@@ -177,13 +244,13 @@ Stage changes:
 git add .
 ```
 
-Commit changes:
+Commit:
 
 ```bash
 git commit -m "Describe what you completed"
 ```
 
-Push changes to GitHub:
+Push:
 
 ```bash
 git push
@@ -197,30 +264,9 @@ git log --oneline
 
 ---
 
-## Suggested Commit Messages
+# Current Dependencies
 
-```text
-Initial project setup
-Configure Python package structure
-Add project documentation and README
-Configure YouTube Data API
-Implement YouTube API connection
-Collect initial YouTube dataset
-Implement data cleaning
-Perform exploratory data analysis
-Engineer engagement features
-Train predictive model
-Generate visualizations
-Complete capstone report
-```
-
----
-
-# Current Python Dependencies
-
-Dependencies are managed through **uv** and `pyproject.toml`.
-
-Current packages:
+Managed with **uv**.
 
 - google-api-python-client
 - python-dotenv
@@ -232,60 +278,43 @@ Current packages:
 
 ---
 
-# Project Notes
-
-## Data Source
-
-- YouTube Data API v3
-- Publicly available YouTube metadata
-- Data collected directly from Google's official API
-
-## Expected Data Formats
-
-- JSON (API responses)
-- pandas DataFrames
-- CSV (saved datasets)
-
-## Planned Outputs
-
-- Raw dataset
-- Cleaned dataset
-- Visualizations
-- Feature engineered dataset
-- Predictive models
-- Final report
-
----
-
 # Capstone Progress
 
 ## Project Setup
 
-- [x] Create project folder
-- [x] Organize project directories
-- [x] Configure `uv`
-- [x] Create virtual environment
-- [x] Configure `.gitignore`
-- [x] Configure `.env`
-- [x] Initialize Git repository
-- [x] Create GitHub repository
-- [x] Push initial project to GitHub
-- [x] Configure YouTube Data API
+- [x] Create project repository
+- [x] Configure Git
+- [x] Configure GitHub
+- [x] Configure uv
+- [x] Configure virtual environment
+- [x] Configure .gitignore
+- [x] Configure .env
 - [x] Create professional README
+- [x] Enable YouTube Data API
+- [x] Generate API key
 
 ## Data Collection
 
-- [ ] Connect to YouTube API
-- [ ] Build data collection script
-- [ ] Collect initial dataset
-- [ ] Save raw CSV
+- [x] Connect to YouTube API
+- [x] Build reusable data collection script
+- [x] Search YouTube videos
+- [x] Convert API response into Python dictionaries
+- [x] Create pandas DataFrame
+- [x] Export raw CSV
+
+### Next Steps
+
+- [ ] Collect video statistics
+- [ ] Collect engagement metrics
+- [ ] Collect channel statistics
+- [ ] Collect larger dataset
 
 ## Data Preparation
 
-- [ ] Clean dataset
+- [ ] Clean data
 - [ ] Handle missing values
 - [ ] Remove duplicates
-- [ ] Engineer additional features
+- [ ] Engineer new features
 
 ## Exploratory Data Analysis
 
@@ -298,27 +327,14 @@ Current packages:
 
 - [ ] Select analytical techniques
 - [ ] Build predictive model
-- [ ] Evaluate results
+- [ ] Evaluate model
 
 ## Reporting
 
 - [ ] Complete analysis
-- [ ] Finalize visualizations
-- [ ] Finish LaTeX report
+- [ ] Finish visualizations
+- [ ] Complete LaTeX report
 - [ ] Submit capstone
-
----
-
-# Future Enhancements
-
-Potential improvements beyond the capstone:
-
-- Additional social media platforms
-- Sentiment analysis
-- NLP on video titles and descriptions
-- Thumbnail image analysis
-- Time-series analysis
-- Interactive dashboards
 
 ---
 

@@ -304,10 +304,10 @@ Managed with **uv**.
 
 ### Next Steps
 
-- [ ] Collect video statistics
-- [ ] Collect engagement metrics
-- [ ] Collect channel statistics
-- [ ] Collect larger dataset
+- [x] Collect video statistics
+- [x] Collect engagement metrics
+- [x] Collect channel statistics
+- [x] Collect larger dataset
 
 ## Data Preparation
 

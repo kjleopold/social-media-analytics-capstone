@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pandas as pd
 
+
 def load_dataset(input_file: Path) -> pd.DataFrame:
     """
     Load the raw YouTube dataset.
@@ -42,18 +43,15 @@ def inspect_dataset(df: pd.DataFrame) -> None:
     print("\nMissing Values")
     print(df.isna().sum())
 
-def remove_duplicates(
-    df: pd.DataFrame,
-) -> pd.DataFrame:
+
+def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
     """
     Remove duplicate video IDs.
     """
 
     before = len(df)
 
-    df = df.drop_duplicates(
-        subset="video_id"
-    )
+    df = df.drop_duplicates(subset="video_id")
 
     removed = before - len(df)
 
@@ -61,26 +59,19 @@ def remove_duplicates(
 
     return df
 
-def convert_data_types(
-    df: pd.DataFrame,
-) -> pd.DataFrame:
+
+def convert_data_types(df: pd.DataFrame) -> pd.DataFrame:
     """
     Convert columns to appropriate data types.
     """
 
-    df["collection_date"] = pd.to_datetime(
-        df["collection_date"]
-    )
-
-    df["published_at"] = pd.to_datetime(
-        df["published_at"]
-    )
+    df["collection_date"] = pd.to_datetime(df["collection_date"])
+    df["published_at"] = pd.to_datetime(df["published_at"])
 
     return df
 
-def validate_dataset(
-    df: pd.DataFrame,
-) -> None:
+
+def validate_dataset(df: pd.DataFrame) -> None:
     """
     Validate the cleaned dataset.
     """
@@ -88,25 +79,11 @@ def validate_dataset(
     print("\nValidation Summary")
     print("-" * 30)
 
-    print(
-        f"Duplicate video IDs: "
-        f"{df['video_id'].duplicated().sum()}"
-    )
+    print(f"Duplicate video IDs: {df['video_id'].duplicated().sum()}")
+    print(f"Missing descriptions: {df['description'].isna().sum()}")
+    print(f"Missing titles: {df['title'].isna().sum()}")
+    print(f"Missing channel names: {df['channel_title'].isna().sum()}")
 
-    print(
-        f"Missing descriptions: "
-        f"{df['description'].isna().sum()}"
-    )
-
-    print(
-        f"Missing titles: "
-        f"{df['title'].isna().sum()}"
-    )
-
-    print(
-        f"Missing channel names: "
-        f"{df['channel_title'].isna().sum()}"
-    )
 
 def save_dataset(
     df: pd.DataFrame,
@@ -116,15 +93,9 @@ def save_dataset(
     Save cleaned dataset.
     """
 
-    output_file.parent.mkdir(
-        parents=True,
-        exist_ok=True,
-    )
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(output_file, index=False)
 
-    df.to_csv(
-        output_file,
-        index=False,
-    )
 
 def main():
     """
@@ -152,19 +123,14 @@ def main():
     df = load_dataset(input_file)
 
     original_rows = len(df)
-
-    descriptions_standardized = (
-        df["description"].isna().sum()
-    )
+    descriptions_standardized = df["description"].isna().sum()
 
     inspect_dataset(df)
 
     df = remove_duplicates(df)
-
     duplicates_removed = original_rows - len(df)
 
     df = convert_data_types(df)
-
     df["description"] = df["description"].fillna("")
 
     validate_dataset(df)
@@ -173,25 +139,20 @@ def main():
     print("-" * 30)
     print(df.dtypes)
 
-    save_dataset(
-        df,
-        output_file,
-    )
+    save_dataset(df, output_file)
 
     print("\nCleaning Summary")
     print("-" * 30)
 
     print(f"Original records: {original_rows}")
     print(f"Duplicate records removed: {duplicates_removed}")
-    print(
-        f"Missing descriptions standardized: "
-        f"{descriptions_standardized}"
-    )
+    print(f"Missing descriptions standardized: {descriptions_standardized}")
     print(f"Final records: {len(df)}")
     print(f"Final attributes: {len(df.columns)}")
 
     print("\nSaved cleaned dataset:")
     print(output_file)
+
 
 if __name__ == "__main__":
     main()

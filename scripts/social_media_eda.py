@@ -434,6 +434,226 @@ def plot_average_comments_by_category(
 
 
 # ---------------------------------------------------------------------
+# Video Characteristic Analysis
+# ---------------------------------------------------------------------
+
+def summarize_video_characteristics(
+    df: pd.DataFrame,
+    tables_dir: Path,
+    figures_dir: Path,
+) -> None:
+    """
+    Summarize engagement by selected
+    video characteristics and save
+    summary tables and visualizations.
+
+    Args:
+        df: Cleaned YouTube dataset.
+        tables_dir: Directory for saved tables.
+        figures_dir: Directory for saved figures.
+    """
+
+    df = df.copy()
+
+    # Create duration categories
+    df["duration_group"] = pd.cut(
+        df["duration_minutes"],
+        bins=[0, 5, 10, 20, float("inf")],
+        labels=[
+            "0-5 Minutes",
+            "5-10 Minutes",
+            "10-20 Minutes",
+            "20+ Minutes",
+        ],
+    )
+
+    # -------------------------------------------------------------
+    # Search Topic Summary
+    # -------------------------------------------------------------
+
+    search_summary = (
+        df.groupby("search_term")[
+            [
+                "view_count",
+                "like_count",
+                "comment_count",
+            ]
+        ]
+        .agg(["mean", "median"])
+        .round(0)
+        .sort_values(
+            by=("view_count", "mean"),
+            ascending=False,
+        )
+    )
+
+    print("\nEngagement Summary by Search Topic")
+    print(search_summary)
+
+    search_summary.to_csv(
+        tables_dir / "search_topic_summary.csv"
+    )
+
+    plot_search_topic_summary(
+        search_summary,
+        figures_dir,
+    )
+
+def plot_duration_summary(
+    duration_summary: pd.DataFrame,
+    figures_dir: Path,
+) -> None:
+    """
+    Plot median view count by video duration group.
+
+    Args:
+        duration_summary: Duration summary table.
+        figures_dir: Directory for saved figures.
+    """
+
+    plot_data = (
+        duration_summary["view_count"]["median"]
+        .reset_index()
+    )
+
+    plt.figure(figsize=(10, 6))
+
+    plt.bar(
+        plot_data["duration_group"],
+        plot_data["median"],
+    )
+
+    plt.title(
+        "Median View Count by Video Duration"
+    )
+
+    plt.xlabel(
+        "Video Duration"
+    )
+
+    plt.ylabel(
+        "Median View Count"
+    )
+
+    plt.gca().yaxis.set_major_formatter(
+        FuncFormatter(thousands_formatter)
+    )
+
+    save_plot(
+        "median_views_by_duration.png",
+        figures_dir,
+    )
+
+    # -------------------------------------------------------------
+    # Caption Summary
+    # -------------------------------------------------------------
+
+    caption_summary = (
+        df.groupby("caption")[
+            [
+                "view_count",
+                "like_count",
+                "comment_count",
+            ]
+        ]
+        .agg(["mean", "median"])
+        .round(0)
+    )
+
+    print("\nEngagement by Caption Availability")
+    print(caption_summary)
+
+    caption_summary.to_csv(
+        tables_dir / "caption_summary.csv"
+    )
+
+    # -------------------------------------------------------------
+    # Duration Summary
+    # -------------------------------------------------------------
+
+    duration_summary = (
+        df.groupby(
+            "duration_group",
+            observed=True,
+        )[
+            [
+                "view_count",
+                "like_count",
+                "comment_count",
+            ]
+        ]
+        .agg(["mean", "median"])
+        .round(0)
+    )
+
+    print("\nEngagement by Video Duration")
+    print(duration_summary)
+
+    duration_summary.to_csv(
+        tables_dir / "duration_summary.csv"
+    )
+
+    plot_duration_summary(
+        duration_summary,
+        figures_dir,
+    )
+
+# ---------------------------------------------------------------------
+# Video Characteristic Visualizations
+# ---------------------------------------------------------------------
+
+def plot_search_topic_summary(
+    search_summary: pd.DataFrame,
+    figures_dir: Path,
+) -> None:
+    """
+    Plot median view count by search topic.
+
+    Args:
+        search_summary: Search topic summary table.
+        figures_dir: Directory for saved figures.
+    """
+
+    plot_data = (
+        search_summary["view_count"]["median"]
+        .sort_values(ascending=False)
+        .reset_index()
+    )
+
+    plt.figure(figsize=(10, 6))
+
+    plt.bar(
+        plot_data["search_term"],
+        plot_data["median"],
+    )
+
+    plt.title(
+        "Median View Count by Search Topic"
+    )
+
+    plt.xlabel(
+        "Search Topic"
+    )
+
+    plt.ylabel(
+        "Median View Count"
+    )
+
+    plt.xticks(
+        rotation=45,
+        ha="right",
+    )
+
+    plt.gca().yaxis.set_major_formatter(
+        FuncFormatter(thousands_formatter)
+    )
+
+    save_plot(
+        "median_views_by_search_topic.png",
+        figures_dir,
+    )
+
+# ---------------------------------------------------------------------
 # Relationship Analysis
 # ---------------------------------------------------------------------
 
@@ -576,6 +796,7 @@ def plot_feature_comparison(
         figures_dir,
     )
 
+
 def plot_caption_engagement(
     df: pd.DataFrame,
     figures_dir: Path,
@@ -595,6 +816,7 @@ def plot_caption_engagement(
         figures_dir=figures_dir,
     )
 
+
 def plot_definition_engagement(
     df: pd.DataFrame,
     figures_dir: Path,
@@ -613,6 +835,7 @@ def plot_definition_engagement(
         filename="views_by_definition.png",
         figures_dir=figures_dir,
     )
+
 
 def plot_correlation_heatmap(
     df: pd.DataFrame,
@@ -652,6 +875,7 @@ def plot_correlation_heatmap(
         "correlation_heatmap.png",
         figures_dir,
     )
+
 
 def print_key_findings(
     df: pd.DataFrame,
@@ -712,7 +936,6 @@ def print_key_findings(
         f"{top_category}"
     )
 
-
 # ---------------------------------------------------------------------
 # Main Program
 # ---------------------------------------------------------------------
@@ -749,6 +972,12 @@ def main() -> None:
     plot_average_views_by_category(engagement_summary, figures_dir)
     plot_average_likes_by_category(engagement_summary, figures_dir)
     plot_average_comments_by_category(engagement_summary, figures_dir)
+
+    summarize_video_characteristics(
+            df,
+            tables_dir,
+            figures_dir,
+        )
 
     plot_views_vs_likes(df, figures_dir)
     plot_views_vs_comments(df, figures_dir)

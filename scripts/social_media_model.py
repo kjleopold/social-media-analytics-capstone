@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 from isodate import parse_duration
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -121,119 +122,6 @@ def prepare_features(
     y = df[TARGET]
 
     return X, y
-
-# ---------------------------------------------------------------------
-# Video Characteristic Analysis
-# ---------------------------------------------------------------------
-
-def summarize_video_characteristics(
-    df: pd.DataFrame,
-    reports_dir: Path,
-) -> None:
-    """
-    Summarize engagement by selected
-    video characteristics and save the
-    summary tables for reporting.
-
-    Args:
-        df: Cleaned YouTube dataset.
-    """
-
-    df = df.copy()
-
-    # Convert duration to minutes
-    df["duration_minutes"] = (
-        df["duration"]
-        .apply(
-            lambda x:
-            parse_duration(x).total_seconds() / 60
-        )
-    )
-
-    # Create duration categories
-    df["duration_group"] = pd.cut(
-        df["duration_minutes"],
-        bins=[0, 5, 10, 20, float("inf")],
-        labels=[
-            "0-5 Minutes",
-            "5-10 Minutes",
-            "10-20 Minutes",
-            "20+ Minutes",
-        ],
-    )
-
-    search_summary = (
-        df.groupby("search_term")[
-            [
-                "view_count",
-                "like_count",
-                "comment_count",
-            ]
-        ]
-        .agg(["mean", "median"])
-        .round(0)
-    )
-
-    search_summary = search_summary.sort_values(
-        by=("view_count", "mean"),
-        ascending=False,
-    )
-
-    print("\nAverage Engagement by Search Topic")
-    print(search_summary)
-
-    search_summary.to_csv(
-        reports_dir / "search_topic_summary.csv"
-    )
-
-    # -------------------------------------------------------------
-    # Caption Summary
-    # -------------------------------------------------------------
-
-    caption_summary = (
-        df.groupby("caption")[
-            [
-                "view_count",
-                "like_count",
-                "comment_count",
-            ]
-        ]
-        .agg(["mean", "median"])
-        .round(0)
-    )
-
-    print("\nEngagement by Caption Availability")
-    print(caption_summary)
-
-    caption_summary.to_csv(
-        reports_dir / "caption_summary.csv"
-    )
-
-    # -------------------------------------------------------------
-    # Duration Summary
-    # -------------------------------------------------------------
-
-    duration_summary = (
-        df.groupby(
-            "duration_group",
-        observed=True,
-    )[
-        [
-            "view_count",
-            "like_count",
-            "comment_count",
-        ]
-    ]
-    .agg(["mean", "median"])
-    .round(0)
-)
-
-    print("\nEngagement by Video Duration")
-    print(duration_summary)
-
-    duration_summary.to_csv(
-        reports_dir / "duration_summary.csv"
-    )
 
 # ---------------------------------------------------------------------
 # Preprocessing Pipeline
@@ -384,6 +272,56 @@ def get_feature_importance(
 
     return feature_df
 
+def plot_feature_importance(
+    feature_importance: pd.DataFrame,
+    figures_dir: Path,
+) -> None:
+    """
+    Plot Random Forest feature importance.
+
+    Args:
+        feature_importance: Feature importance table.
+        reports_dir: Reports directory.
+    """
+
+    plot_data = (
+        feature_importance
+        .sort_values(
+            "Importance",
+            ascending=True,
+        )
+    )
+
+    plt.figure(figsize=(10, 8))
+
+    plt.barh(
+        plot_data["Feature"],
+        plot_data["Importance"],
+    )
+
+    plt.title(
+        "Random Forest Feature Importance for YouTube Video Engagement"
+    )
+
+    plt.xlabel(
+        "Importance Score"
+    )
+
+    plt.ylabel(
+        "Feature"
+    )
+
+    plt.tight_layout()
+
+    plt.savefig(
+        figures_dir
+        / "feature_importance.png",
+        dpi=300,
+        bbox_inches="tight",
+    )
+
+    plt.close()
+
 # ---------------------------------------------------------------------
 # Main Function
 # ---------------------------------------------------------------------
@@ -404,20 +342,26 @@ def main() -> None:
 
     df = load_dataset(input_file)
 
-    reports_dir = (
+    tables_dir = (
         project_root
         / "reports"
         / "tables"
     )
 
-    reports_dir.mkdir(
+    figures_dir = (
+        project_root
+        / "reports"
+        / "figures"
+    )
+
+    tables_dir.mkdir(
         parents=True,
         exist_ok=True,
     )
 
-    summarize_video_characteristics(
-        df,
-        reports_dir,
+    figures_dir.mkdir(
+        parents=True,
+        exist_ok=True,
     )
 
     X, y = prepare_features(df)
@@ -538,8 +482,13 @@ def main() -> None:
     )
 
     feature_importance.to_csv(
-        reports_dir / "feature_importance.csv",
+        tables_dir / "feature_importance.csv",
         index=False,
+    )
+
+    plot_feature_importance(
+        feature_importance,
+        figures_dir,
     )
 
     print("\nFEATURE IMPORTANCE")
@@ -559,7 +508,7 @@ def main() -> None:
     results = results.round(4)
 
     results.to_csv(
-        reports_dir / "model_performance.csv"
+        tables_dir / "model_performance.csv"
     )
 
     print("\n" + "=" * 60)

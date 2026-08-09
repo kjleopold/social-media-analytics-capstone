@@ -14,24 +14,19 @@ import numpy as np
 from isodate import parse_duration
 import pandas as pd
 
-from sklearn.compose import ColumnTransformer
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import (
-    mean_absolute_error,
-    mean_squared_error,
-    r2_score,
-)
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.base import RegressorMixin
 from sklearn.metrics import (
     mean_absolute_error,
-    mean_squared_error,
     root_mean_squared_error,
     r2_score,
 )
+
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import LinearRegression
 
 # ---------------------------------------------------------------------
 # Global Settings
@@ -126,6 +121,119 @@ def prepare_features(
     y = df[TARGET]
 
     return X, y
+
+# ---------------------------------------------------------------------
+# Video Characteristic Analysis
+# ---------------------------------------------------------------------
+
+def summarize_video_characteristics(
+    df: pd.DataFrame,
+    reports_dir: Path,
+) -> None:
+    """
+    Summarize engagement by selected
+    video characteristics and save the
+    summary tables for reporting.
+
+    Args:
+        df: Cleaned YouTube dataset.
+    """
+
+    df = df.copy()
+
+    # Convert duration to minutes
+    df["duration_minutes"] = (
+        df["duration"]
+        .apply(
+            lambda x:
+            parse_duration(x).total_seconds() / 60
+        )
+    )
+
+    # Create duration categories
+    df["duration_group"] = pd.cut(
+        df["duration_minutes"],
+        bins=[0, 5, 10, 20, float("inf")],
+        labels=[
+            "0-5 Minutes",
+            "5-10 Minutes",
+            "10-20 Minutes",
+            "20+ Minutes",
+        ],
+    )
+
+    search_summary = (
+        df.groupby("search_term")[
+            [
+                "view_count",
+                "like_count",
+                "comment_count",
+            ]
+        ]
+        .agg(["mean", "median"])
+        .round(0)
+    )
+
+    search_summary = search_summary.sort_values(
+        by=("view_count", "mean"),
+        ascending=False,
+    )
+
+    print("\nAverage Engagement by Search Topic")
+    print(search_summary)
+
+    search_summary.to_csv(
+        reports_dir / "search_topic_summary.csv"
+    )
+
+    # -------------------------------------------------------------
+    # Caption Summary
+    # -------------------------------------------------------------
+
+    caption_summary = (
+        df.groupby("caption")[
+            [
+                "view_count",
+                "like_count",
+                "comment_count",
+            ]
+        ]
+        .agg(["mean", "median"])
+        .round(0)
+    )
+
+    print("\nEngagement by Caption Availability")
+    print(caption_summary)
+
+    caption_summary.to_csv(
+        reports_dir / "caption_summary.csv"
+    )
+
+    # -------------------------------------------------------------
+    # Duration Summary
+    # -------------------------------------------------------------
+
+    duration_summary = (
+        df.groupby(
+            "duration_group",
+        observed=True,
+    )[
+        [
+            "view_count",
+            "like_count",
+            "comment_count",
+        ]
+    ]
+    .agg(["mean", "median"])
+    .round(0)
+)
+
+    print("\nEngagement by Video Duration")
+    print(duration_summary)
+
+    duration_summary.to_csv(
+        reports_dir / "duration_summary.csv"
+    )
 
 # ---------------------------------------------------------------------
 # Preprocessing Pipeline
@@ -237,6 +345,46 @@ def evaluate_model(
     return results
 
 # ---------------------------------------------------------------------
+# Feature Importance
+# ---------------------------------------------------------------------
+
+def get_feature_importance(
+    pipeline: Pipeline,
+) -> pd.DataFrame:
+    """
+    Extract feature importance from the trained
+    Random Forest model.
+
+    Args:
+        pipeline: Trained Random Forest pipeline.
+
+    Returns:
+        DataFrame containing feature names
+        and importance scores.
+    """
+    model = pipeline.named_steps["model"]
+
+    preprocessor = pipeline.named_steps["preprocessor"]
+
+    feature_names = preprocessor.get_feature_names_out()
+
+    importance = model.feature_importances_
+
+    feature_df = pd.DataFrame(
+        {
+            "Feature": feature_names,
+            "Importance": importance,
+        }
+    )
+
+    feature_df = feature_df.sort_values(
+        by="Importance",
+        ascending=False,
+    )
+
+    return feature_df
+
+# ---------------------------------------------------------------------
 # Main Function
 # ---------------------------------------------------------------------
 
@@ -255,6 +403,22 @@ def main() -> None:
     )
 
     df = load_dataset(input_file)
+
+    reports_dir = (
+        project_root
+        / "reports"
+        / "tables"
+    )
+
+    reports_dir.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    summarize_video_characteristics(
+        df,
+        reports_dir,
+    )
 
     X, y = prepare_features(df)
 
@@ -299,6 +463,88 @@ def main() -> None:
         y_test,
     )
 
+    feature_importance = get_feature_importance(
+        forest_pipeline,
+    )
+
+    feature_importance["Feature"] = (
+        feature_importance["Feature"]
+        .str.replace(
+            "categorical__",
+            "",
+            regex=False,
+        )
+        .str.replace(
+            "remainder__",
+            "",
+            regex=False,
+        )
+        .str.replace(
+            "search_term_",
+            "Search Topic: ",
+            regex=False,
+        )
+        .str.replace(
+            "caption_",
+            "Caption: ",
+            regex=False,
+        )
+        .str.replace(
+            "definition_",
+            "Definition: ",
+            regex=False,
+        )
+        .str.replace(
+            "published_year",
+            "Published Year",
+            regex=False,
+        )
+        .str.replace(
+            "published_month",
+            "Published Month",
+            regex=False,
+        )
+        .str.replace(
+            "duration_minutes",
+            "Duration (Minutes)",
+            regex=False,
+        )
+        .str.replace(
+            "_",
+            " ",
+            regex=False,
+        )
+        .str.title()
+        .str.replace(
+            "Hd",
+            "HD",
+            regex=False,
+        )
+        .str.replace(
+            "Sd",
+            "SD",
+            regex=False,
+        )
+        .str.replace(
+            "True",
+            "Yes",
+            regex=False,
+        )
+        .str.replace(
+            "False",
+            "No",
+            regex=False,
+        )
+    )
+
+    feature_importance.to_csv(
+        reports_dir / "feature_importance.csv",
+        index=False,
+    )
+
+    print("\nFEATURE IMPORTANCE")
+    print(feature_importance)
+
     # -------------------------------------------------------------
     # Results
     # -------------------------------------------------------------
@@ -308,17 +554,6 @@ def main() -> None:
             "Linear Regression": linear_results,
             "Random Forest": forest_results,
         }
-    )
-
-    reports_dir = (
-        project_root
-        / "reports"
-        / "tables"
-    )
-
-    reports_dir.mkdir(
-        parents=True,
-        exist_ok=True,
     )
 
     results = results.round(4)

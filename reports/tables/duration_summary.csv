@@ -1,0 +1,7 @@
+,view_count,view_count,like_count,like_count,comment_count,comment_count
+,mean,median,mean,median,mean,median
+duration_group,,,,,,
+0-5 Minutes,17665516.0,1382976.0,445897.0,25684.0,2420.0,323.0
+5-10 Minutes,1447211.0,513341.0,48642.0,15936.0,2290.0,446.0
+10-20 Minutes,1681891.0,364738.0,23831.0,8074.0,767.0,422.0
+20+ Minutes,4096468.0,1041108.0,59531.0,16742.0,2861.0,740.0

@@ -499,50 +499,6 @@ def summarize_video_characteristics(
         figures_dir,
     )
 
-def plot_duration_summary(
-    duration_summary: pd.DataFrame,
-    figures_dir: Path,
-) -> None:
-    """
-    Plot median view count by video duration group.
-
-    Args:
-        duration_summary: Duration summary table.
-        figures_dir: Directory for saved figures.
-    """
-
-    plot_data = (
-        duration_summary["view_count"]["median"]
-        .reset_index()
-    )
-
-    plt.figure(figsize=(10, 6))
-
-    plt.bar(
-        plot_data["duration_group"],
-        plot_data["median"],
-    )
-
-    plt.title(
-        "Median View Count by Video Duration"
-    )
-
-    plt.xlabel(
-        "Video Duration"
-    )
-
-    plt.ylabel(
-        "Median View Count"
-    )
-
-    plt.gca().yaxis.set_major_formatter(
-        FuncFormatter(thousands_formatter)
-    )
-
-    save_plot(
-        "median_views_by_duration.png",
-        figures_dir,
-    )
 
     # -------------------------------------------------------------
     # Caption Summary
@@ -602,12 +558,59 @@ def plot_duration_summary(
 # Video Characteristic Visualizations
 # ---------------------------------------------------------------------
 
+def plot_duration_summary(
+    duration_summary: pd.DataFrame,
+    figures_dir: Path,
+) -> None:
+    """
+    Plot median view count by video duration.
+
+    Args:
+        duration_summary: Duration summary table.
+        figures_dir: Directory for saved figures.
+    """
+
+    plot_data = (
+        duration_summary["view_count"]["median"]
+        .reset_index()
+    )
+
+    plt.figure(figsize=(10, 6))
+
+    plt.bar(
+        plot_data["duration_group"],
+        plot_data["median"],
+    )
+
+    plt.title(
+        "Median View Count by Video Duration"
+    )
+
+    plt.xlabel(
+        "Video Duration"
+    )
+
+    plt.ylabel(
+        "Median View Count"
+    )
+
+    plt.gca().yaxis.set_major_formatter(
+        FuncFormatter(thousands_formatter)
+    )
+
+    save_plot(
+        "median_views_by_duration.png",
+        figures_dir,
+    )
+
+
 def plot_search_topic_summary(
     search_summary: pd.DataFrame,
     figures_dir: Path,
 ) -> None:
     """
-    Plot median view count by search topic.
+    Plot median view count by search topic
+    using a Cleveland dot plot.
 
     Args:
         search_summary: Search topic summary table.
@@ -616,37 +619,43 @@ def plot_search_topic_summary(
 
     plot_data = (
         search_summary["view_count"]["median"]
-        .sort_values(ascending=False)
+        .sort_values(ascending=True)
         .reset_index()
     )
 
-    plt.figure(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6))
 
-    plt.bar(
-        plot_data["search_term"],
-        plot_data["median"],
+    ax.hlines(
+        y=plot_data["search_term"],
+        xmin=0,
+        xmax=plot_data["median"],
+        linewidth=1.5,
     )
 
-    plt.title(
+    ax.scatter(
+        plot_data["median"],
+        plot_data["search_term"],
+        s=100,
+        zorder=3,
+    )
+
+    ax.set_title(
         "Median View Count by Search Topic"
     )
 
-    plt.xlabel(
-        "Search Topic"
-    )
-
-    plt.ylabel(
+    ax.set_xlabel(
         "Median View Count"
     )
 
-    plt.xticks(
-        rotation=45,
-        ha="right",
+    ax.set_ylabel(
+        "Search Topic"
     )
 
-    plt.gca().yaxis.set_major_formatter(
+    ax.xaxis.set_major_formatter(
         FuncFormatter(thousands_formatter)
     )
+
+    plt.tight_layout()
 
     save_plot(
         "median_views_by_search_topic.png",

@@ -311,23 +311,23 @@ Managed with **uv**.
 
 ## Data Preparation
 
-- [ ] Clean data
-- [ ] Handle missing values
-- [ ] Remove duplicates
-- [ ] Engineer new features
+- [x] Clean data
+- [x] Handle missing values
+- [x] Remove duplicates
+- [x] Engineer new features
 
 ## Exploratory Data Analysis
 
-- [ ] Summary statistics
-- [ ] Correlation analysis
-- [ ] Visualizations
-- [ ] Identify trends
+- [x] Summary statistics
+- [x] Correlation analysis
+- [x] Visualizations
+- [x] Identify trends
 
 ## Modeling
 
-- [ ] Select analytical techniques
-- [ ] Build predictive model
-- [ ] Evaluate model
+- [x] Select analytical techniques
+- [x] Build predictive model
+- [x] Evaluate model
 
 ## Reporting
 

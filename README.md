@@ -79,8 +79,8 @@ social-media-analytics-capstone/
 │
 ├── .gitignore
 ├── .python-version
-├── pyproject.toml
 ├── README.md
+├── pyproject.toml
 └── uv.lock
 ```
 

@@ -1,12 +1,22 @@
-# Social Media Analytics Capstone
+# Analyzing the Drivers of Social Media Engagement
 
-Master's capstone project for the Master of Science in Data Analytics program at Northwest Missouri State University.
+Master of Science in Data Analytics
+
+Capstone Project
+
+**Author:** Kellie J. Leopold
+
+Northwest Missouri State University
+
+Summer 2026
+
+**Project Status:** Completed (Summer 2026)
 
 ---
 
 ## Project Overview
 
-This project examines the relationship between selected YouTube video characteristics and social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, preparation, exploratory data analysis, validation, supervised machine learning, and interpretation of results.
+This project examines the relationship between selected YouTube video characteristics and social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, preparation, exploratory data analysis, validation, supervised machine learning modeling, and interpretation of results.
 
 Two supervised machine learning models, Linear Regression and Random Forest Regression, were developed and compared to evaluate how effectively selected video characteristics could be used to predict YouTube video engagement.
 
@@ -375,15 +385,3 @@ Managed with **uv**.
 - [x] Finish visualizations
 - [x] Complete LaTeX report
 - [x] Submit capstone
-
----
-
-# Author
-
-**Kellie J. Leopold**
-
-Master of Science in Data Analytics
-
-Northwest Missouri State University
-
-Summer 2026

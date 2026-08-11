@@ -16,7 +16,7 @@ Summer 2026
 
 ## Project Overview
 
-This project examines the relationship between selected YouTube video characteristics and social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, data preparation and cleaning, exploratory data analysis, data validation, supervised machine learning modeling, and interpretation of results.
+This capstone project examines the relationship between selected YouTube video characteristics and social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, data preparation and cleaning, exploratory data analysis, data validation, supervised machine learning modeling, and interpretation of results.
 
 Two supervised machine learning models, Linear Regression and Random Forest Regression, were developed and compared to evaluate how effectively selected video characteristics could be used to predict YouTube video engagement.
 
@@ -35,7 +35,7 @@ Two supervised machine learning models, Linear Regression and Random Forest Regr
 - Explore relationships between selected YouTube video characteristics and engagement.
 - Develop and compare Linear Regression and Random Forest Regression models.
 - Evaluate model performance using R², Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE).
-- Interpret the results and discuss the study's limitations.
+- Interpret the findings and discuss the limitations of the study.
 
 ---
 
@@ -66,8 +66,6 @@ social-media-analytics-capstone/
 │       └── youtube_video_metadata_clean.csv
 │
 ├── reports/
-│   ├── figures/
-│   └── tables/
 │
 ├── scripts/
 │   ├── collect_youtube_metadata.py
@@ -160,10 +158,10 @@ The final dataset includes variables such as:
 | description | Video description |
 | channel_title | Channel name |
 | published_at | Upload date and time |
-| search_topic | Search term used to retrieve the video |
-| view_count | Total views |
-| like_count | Total likes |
-| comment_count | Total comments |
+| search_topic | Search topic used to retrieve the video |
+| view_count | Total view count |
+| like_count | Total like count |
+| comment_count | Total comment count |
 | duration | Video duration |
 | caption_available | Caption availability |
 | definition | Video definition (HD or SD) |
@@ -179,7 +177,7 @@ The cleaned dataset was prepared for supervised machine learning by:
 - Extracting publication year and publication month.
 - Log-transforming view counts to reduce skewness.
 - One-hot encoding categorical variables.
-- Splitting the data into training and testing datasets (80/20).
+- Splitting the data into 80% training and 20% testing datasets.
 - Training Linear Regression and Random Forest Regression models.
 - Evaluating model performance using:
   - R²
@@ -190,6 +188,8 @@ The cleaned dataset was prepared for supervised machine learning by:
 
 # Results Summary
 
+Two supervised machine learning models were evaluated using the same preprocessing pipeline and testing dataset.
+
 The Random Forest Regression model outperformed the Linear Regression model across all evaluation metrics.
 
 | Metric | Linear Regression | Random Forest |
@@ -198,7 +198,7 @@ The Random Forest Regression model outperformed the Linear Regression model acro
 | MAE | 0.6087 | 0.5143 |
 | RMSE | 0.7702 | 0.6461 |
 
-The analysis demonstrated that YouTube video engagement is associated with multiple measurable video characteristics. Search topic and video duration were associated with differences in engagement, and the Random Forest model provided more accurate predictions than the Linear Regression model. Overall, the project demonstrated the value of combining exploratory data analysis with machine learning to better understand patterns in social media engagement.
+The analysis demonstrated that YouTube video engagement is associated with multiple measurable video characteristics. Differences in engagement were observed across search topics and video duration groups, and the Random Forest model provided more accurate predictions than the Linear Regression model. Overall, the project demonstrated the value of combining exploratory data analysis with supervised machine learning to better understand patterns in social media engagement.
 
 ---
 

@@ -6,23 +6,26 @@ Master's capstone project for the Master of Science in Data Analytics program at
 
 ## Project Overview
 
-This project investigates the factors associated with higher levels of social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, preparation, exploratory data analysis, validation, predictive modeling, and interpretation of results.
+This project examines the relationship between selected YouTube video characteristics and social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, preparation, exploratory data analysis, validation, supervised machine learning, and interpretation of results.
+
+Two supervised machine learning models, Linear Regression and Random Forest Regression, were developed and compared to evaluate how effectively selected video characteristics could be used to predict YouTube video engagement.
 
 ---
 
 ## Research Question
 
-**What factors are associated with higher levels of social media engagement?**
+**Which YouTube video characteristics are associated with higher levels of social media engagement, and how effectively can machine learning models predict engagement using those characteristics?**
 
 ---
 
 ## Objectives
 
-- Collect publicly available YouTube video metadata using the YouTube Data API.
-- Prepare and clean the collected dataset.
-- Explore relationships between video characteristics and engagement.
-- Identify variables associated with higher engagement.
-- Develop data-driven recommendations.
+- Collect publicly available YouTube video metadata using the YouTube Data API v3.
+- Prepare, clean, and validate the collected dataset.
+- Explore relationships between selected YouTube video characteristics and engagement.
+- Develop and compare Linear Regression and Random Forest Regression models.
+- Evaluate model performance using R², MAE, and RMSE.
+- Interpret the results and discuss the study's limitations.
 
 ---
 
@@ -78,11 +81,11 @@ social-media-analytics-capstone/
 2. Data Preparation and Cleaning
 3. Exploratory Data Analysis
 4. Data Validation
-5. Results and Analysis
+5. Machine Learning Modeling
 
 ---
 
-# Current Data Collection Pipeline
+# Data Collection Pipeline
 
 ```text
 Load API Key (.env)
@@ -91,7 +94,10 @@ Load API Key (.env)
 Create YouTube Client
         │
         ▼
-Search Videos
+Search Multiple Topics
+        │
+        ▼
+Retrieve Video Metadata and Engagement Statistics
         │
         ▼
 Convert Results to Python Dictionaries
@@ -100,10 +106,13 @@ Convert Results to Python Dictionaries
 Create pandas DataFrame
         │
         ▼
+Clean and Validate Dataset
+        │
+        ▼
 Export CSV
 ```
 
-Current output:
+Output:
 
 ```text
 data/raw/youtube_search_results.csv
@@ -111,9 +120,20 @@ data/raw/youtube_search_results.csv
 
 ---
 
-# Current Dataset
+# Dataset
 
-The current data collection script retrieves the following information for each video:
+The dataset was collected using the YouTube Data API v3 and includes videos from eight search topics:
+
+- Cooking
+- Fitness
+- Travel
+- Finance
+- Python Programming
+- Data Analytics
+- Fortnite
+- Minecraft
+
+The final dataset includes variables such as:
 
 | Column | Description |
 |---------|-------------|
@@ -122,15 +142,44 @@ The current data collection script retrieves the following information for each 
 | description | Video description |
 | channel_title | Channel name |
 | published_at | Upload date and time |
+| search_topic | Search term used to retrieve the video |
+| view_count | Total views |
+| like_count | Total likes |
+| comment_count | Total comments |
+| duration | Video duration |
+| caption_available | Caption availability |
+| definition | Video definition (HD or SD) |
 
-Future versions will collect:
+---
 
-- View count
-- Like count
-- Comment count
-- Video duration
-- Category ID
-- Channel statistics
+# Machine Learning Pipeline
+
+The cleaned dataset was prepared for supervised machine learning by:
+
+- Converting video duration into minutes.
+- Extracting publication year and publication month.
+- Log-transforming view counts to reduce skewness.
+- One-hot encoding categorical variables.
+- Splitting the data into 80% training and 20% testing datasets.
+- Training Linear Regression and Random Forest Regression models.
+- Evaluating model performance using:
+  - R²
+  - Mean Absolute Error (MAE)
+  - Root Mean Squared Error (RMSE)
+
+---
+
+# Results Summary
+
+The Random Forest Regression model outperformed the Linear Regression model across all evaluation metrics.
+
+| Metric | Linear Regression | Random Forest |
+|--------|------------------:|--------------:|
+| R² | 0.4092 | 0.5842 |
+| MAE | 0.6087 | 0.5143 |
+| RMSE | 0.7702 | 0.6461 |
+
+The analysis demonstrated that YouTube video engagement is associated with multiple measurable video characteristics. Search topic and video duration were among the characteristics associated with differences in engagement, and the Random Forest model provided more accurate predictions than the Linear Regression model. Overall, the project demonstrated the value of combining exploratory data analysis with machine learning to better understand patterns in social media engagement.
 
 ---
 
@@ -200,15 +249,13 @@ Run the data collection script:
 python scripts/collect_youtube_data.py
 ```
 
-The script will:
+The complete project workflow includes:
 
-- Load the API key
-- Connect to the YouTube Data API
-- Search for videos
-- Convert results into structured Python dictionaries
-- Create a pandas DataFrame
-- Save the data as a CSV file
-- Display a preview of the collected data
+1. Collect data from the YouTube Data API.
+2. Prepare and clean the dataset.
+3. Perform exploratory data analysis.
+4. Train and evaluate machine learning models.
+5. Generate visualizations and interpret the results.
 
 ---
 
@@ -297,17 +344,9 @@ Managed with **uv**.
 
 - [x] Connect to YouTube API
 - [x] Build reusable data collection script
-- [x] Search YouTube videos
-- [x] Convert API response into Python dictionaries
+- [x] Collect video metadata and engagement statistics
 - [x] Create pandas DataFrame
 - [x] Export raw CSV
-
-### Next Steps
-
-- [x] Collect video statistics
-- [x] Collect engagement metrics
-- [x] Collect channel statistics
-- [x] Collect larger dataset
 
 ## Data Preparation
 
@@ -315,6 +354,7 @@ Managed with **uv**.
 - [x] Handle missing values
 - [x] Remove duplicates
 - [x] Engineer new features
+- [x] Validate dataset
 
 ## Exploratory Data Analysis
 
@@ -325,16 +365,16 @@ Managed with **uv**.
 
 ## Modeling
 
-- [x] Select analytical techniques
-- [x] Build predictive model
-- [x] Evaluate model
+- [x] Build Linear Regression model
+- [x] Build Random Forest Regression model
+- [x] Evaluate model performance
 
 ## Reporting
 
-- [ ] Complete analysis
-- [ ] Finish visualizations
-- [ ] Complete LaTeX report
-- [ ] Submit capstone
+- [x] Complete analysis
+- [x] Finish visualizations
+- [x] Complete LaTeX report
+- [x] Submit capstone
 
 ---
 

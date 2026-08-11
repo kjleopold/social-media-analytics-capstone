@@ -16,7 +16,7 @@ Summer 2026
 
 ## Project Overview
 
-This project examines the relationship between selected YouTube video characteristics and social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, preparation, exploratory data analysis, validation, supervised machine learning modeling, and interpretation of results.
+This project examines the relationship between selected YouTube video characteristics and social media engagement using data collected directly from the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, data preparation and cleaning, exploratory data analysis, data validation, supervised machine learning modeling, and interpretation of results.
 
 Two supervised machine learning models, Linear Regression and Random Forest Regression, were developed and compared to evaluate how effectively selected video characteristics could be used to predict YouTube video engagement.
 
@@ -34,7 +34,7 @@ Two supervised machine learning models, Linear Regression and Random Forest Regr
 - Prepare, clean, and validate the collected dataset.
 - Explore relationships between selected YouTube video characteristics and engagement.
 - Develop and compare Linear Regression and Random Forest Regression models.
-- Evaluate model performance using R², MAE, and RMSE.
+- Evaluate model performance using R², Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE).
 - Interpret the results and discuss the study's limitations.
 
 ---
@@ -61,27 +61,32 @@ social-media-analytics-capstone/
 │
 ├── data/
 │   ├── raw/
+│   │   └── youtube_video_metadata.csv
 │   └── processed/
+│       └── youtube_video_metadata_clean.csv
 │
-├── figures/
-├── notebooks/
-├── output/
+├── reports/
+│   ├── figures/
+│   └── tables/
+│
 ├── scripts/
-│   └── collect_youtube_data.py
+│   ├── collect_youtube_metadata.py
+│   ├── clean_youtube_data.py
+│   ├── social_media_eda.py
+│   └── social_media_model.py
 │
 ├── src/
 │   └── social_media_analytics/
 │       └── __init__.py
 │
-├── Report Docs/
-│
-├── .env
 ├── .gitignore
 ├── .python-version
 ├── pyproject.toml
 ├── README.md
 └── uv.lock
 ```
+
+> **Note:** The `.env` file containing the YouTube Data API key is excluded from GitHub using `.gitignore`.
 
 ---
 
@@ -116,23 +121,26 @@ Convert Results to Python Dictionaries
 Create pandas DataFrame
         │
         ▼
-Clean and Validate Dataset
-        │
-        ▼
-Export CSV
+Export Raw Dataset
 ```
 
-Output:
+Raw dataset:
 
 ```text
-data/raw/youtube_search_results.csv
+data/raw/youtube_video_metadata.csv
+```
+
+The raw dataset is then cleaned, validated, and exported as:
+
+```text
+data/processed/youtube_video_metadata_clean.csv
 ```
 
 ---
 
 # Dataset
 
-The dataset was collected using the YouTube Data API v3 and includes videos from eight search topics:
+The dataset was collected using the YouTube Data API v3 and includes videos from the following search topics:
 
 - Cooking
 - Fitness
@@ -166,11 +174,12 @@ The final dataset includes variables such as:
 
 The cleaned dataset was prepared for supervised machine learning by:
 
+- Engineering new features from the original data.
 - Converting video duration into minutes.
 - Extracting publication year and publication month.
 - Log-transforming view counts to reduce skewness.
 - One-hot encoding categorical variables.
-- Splitting the data into 80% training and 20% testing datasets.
+- Splitting the data into training and testing datasets (80/20).
 - Training Linear Regression and Random Forest Regression models.
 - Evaluating model performance using:
   - R²
@@ -184,12 +193,12 @@ The cleaned dataset was prepared for supervised machine learning by:
 The Random Forest Regression model outperformed the Linear Regression model across all evaluation metrics.
 
 | Metric | Linear Regression | Random Forest |
-|--------|------------------:|--------------:|
+|---------|------------------:|--------------:|
 | R² | 0.4092 | 0.5842 |
 | MAE | 0.6087 | 0.5143 |
 | RMSE | 0.7702 | 0.6461 |
 
-The analysis demonstrated that YouTube video engagement is associated with multiple measurable video characteristics. Search topic and video duration were among the characteristics associated with differences in engagement, and the Random Forest model provided more accurate predictions than the Linear Regression model. Overall, the project demonstrated the value of combining exploratory data analysis with machine learning to better understand patterns in social media engagement.
+The analysis demonstrated that YouTube video engagement is associated with multiple measurable video characteristics. Search topic and video duration were associated with differences in engagement, and the Random Forest model provided more accurate predictions than the Linear Regression model. Overall, the project demonstrated the value of combining exploratory data analysis with machine learning to better understand patterns in social media engagement.
 
 ---
 
@@ -201,7 +210,7 @@ Synchronize dependencies:
 uv sync
 ```
 
-Activate the virtual environment:
+Activate the virtual environment.
 
 ### Windows PowerShell
 
@@ -253,19 +262,14 @@ uv pip list
 
 # Running the Project
 
-Run the data collection script:
+Run the project scripts in the following order:
 
 ```bash
-python scripts/collect_youtube_data.py
+python scripts/collect_youtube_metadata.py
+python scripts/clean_youtube_data.py
+python scripts/social_media_eda.py
+python scripts/social_media_model.py
 ```
-
-The complete project workflow includes:
-
-1. Collect data from the YouTube Data API.
-2. Prepare and clean the dataset.
-3. Perform exploratory data analysis.
-4. Train and evaluate machine learning models.
-5. Generate visualizations and interpret the results.
 
 ---
 
@@ -283,7 +287,7 @@ Example:
 YOUTUBE_API_KEY=YOUR_API_KEY
 ```
 
-The `.env` file is ignored by Git and should never be committed.
+The `.env` file is excluded from version control using `.gitignore` and should never be committed.
 
 ---
 
@@ -301,13 +305,13 @@ Stage changes:
 git add .
 ```
 
-Commit:
+Commit changes:
 
 ```bash
 git commit -m "Describe what you completed"
 ```
 
-Push:
+Push to GitHub:
 
 ```bash
 git push
@@ -321,7 +325,7 @@ git log --oneline
 
 ---
 
-# Current Dependencies
+# Dependencies
 
 Managed with **uv**.
 
@@ -346,17 +350,16 @@ Managed with **uv**.
 - [x] Configure virtual environment
 - [x] Configure .gitignore
 - [x] Configure .env
-- [x] Create professional README
 - [x] Enable YouTube Data API
 - [x] Generate API key
 
 ## Data Collection
 
-- [x] Connect to YouTube API
+- [x] Connect to the YouTube Data API
 - [x] Build reusable data collection script
-- [x] Collect video metadata and engagement statistics
-- [x] Create pandas DataFrame
-- [x] Export raw CSV
+- [x] Collect video metadata
+- [x] Collect engagement statistics
+- [x] Export raw dataset
 
 ## Data Preparation
 
@@ -368,20 +371,20 @@ Managed with **uv**.
 
 ## Exploratory Data Analysis
 
-- [x] Summary statistics
-- [x] Correlation analysis
-- [x] Visualizations
-- [x] Identify trends
+- [x] Perform summary statistics
+- [x] Create visualizations
+- [x] Identify patterns and trends
 
-## Modeling
+## Machine Learning
 
 - [x] Build Linear Regression model
 - [x] Build Random Forest Regression model
 - [x] Evaluate model performance
+- [x] Interpret results
 
 ## Reporting
 
-- [x] Complete analysis
-- [x] Finish visualizations
-- [x] Complete LaTeX report
+- [x] Complete capstone report
+- [x] Create supporting visualizations
+- [x] Finalize documentation
 - [x] Submit capstone

@@ -168,21 +168,19 @@ categorical variables for modeling.
 
 ## Technology Stack
 
-  Category                  Technologies
-  ------------------------- --------------------------------------
-  Programming language      Python
-  API integration           YouTube Data API v3
-  Data manipulation         pandas, NumPy
-  Visualization             Matplotlib
-  Machine learning          scikit-learn
-  Preprocessing             `ColumnTransformer`, `OneHotEncoder`
-  Data exchange             CSV
-  Dependency management     `uv`, `pyproject.toml`, `uv.lock`
-  Configuration             `python-dotenv`, `.env`
-  Version control           Git, GitHub
-  Development environment   VS Code, terminal
-
-------------------------------------------------------------------------
+| Category | Technologies |
+|---|---|
+| Programming Language | Python |
+| API Integration | YouTube Data API v3 |
+| Data Manipulation | pandas, NumPy |
+| Data Visualization | Matplotlib |
+| Machine Learning | scikit-learn |
+| Data Preprocessing | ColumnTransformer, OneHotEncoder |
+| Data Storage | CSV |
+| Dependency Management | uv, pyproject.toml, uv.lock |
+| Configuration & Credentials | python-dotenv, .env |
+| Version Control | Git, GitHub |
+| Development Environment | Visual Studio Code, terminal |
 
 ## Repository Structure
 

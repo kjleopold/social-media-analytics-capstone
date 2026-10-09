@@ -236,20 +236,20 @@ The collection workflow covers eight predefined YouTube search topics:
 
 ### Principal Data Fields
 
-  Field                 Description
-  --------------------- -----------------------------------------
-  `video_id`            Unique YouTube video identifier
-  `title`               Video title
-  `description`         Video description
-  `channel_title`       Name of the publishing channel
-  `published_at`        Publication timestamp
-  `search_topic`        Search topic associated with the record
-  `view_count`          Number of views; regression target
-  `like_count`          Number of likes
-  `comment_count`       Number of comments
-  `duration`            Video duration
-  `caption_available`   Caption availability indicator
-  `definition`          Video definition, such as HD or SD
+| Field | Description |
+|---|---|
+| `video_id` | Unique YouTube video identifier |
+| `title` | Video title |
+| `description` | Video description |
+| `channel_title` | Name of the publishing channel |
+| `published_at` | Publication timestamp |
+| `search_topic` | Search topic associated with the record |
+| `view_count` | Number of views; regression target |
+| `like_count` | Number of likes |
+| `comment_count` | Number of comments |
+| `duration` | Video duration |
+| `caption_available` | Caption availability indicator |
+| `definition` | Video definition, such as HD or SD |
 
 **Dataset note:** The final report documents 14 attributes. The table
 above lists principal fields described in the project documentation;

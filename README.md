@@ -4,7 +4,7 @@
 ## 📋 Architectural Overview
 This repository contains a modular, production-ready **ETL (Extract, Transform, Load) data pipeline** built entirely in Python. The system targets, throttles, and ingests semi-structured JSON payloads from external REST endpoints (YouTube Data API v3), applies rigorous programmatically enforced data validation rules, handles missing data edge cases, and pipes clean data into an automated feature-engineering and predictive machine learning execution framework.
 
-Use code with caution.
+```text
 [ DATA EXTRACT LAYER ]
 Third-Party REST API Endpoints
 │
@@ -15,6 +15,7 @@ Modular Preprocessing, Schema Enforcement, & Automated Sanitization
 ▼ (Valid Partitioned CSVs)
 [ DATA LOAD & MODEL LAYER ]
 Sklearn ColumnTransformer, One-Hot Encoding, & Ensemble Regressors
+```
 
 By decoupling the pipeline architecture into isolated scripts for orchestration, transformation, validation, and analytics, this infrastructure mimics modern enterprise data platform systems.
 
@@ -32,6 +33,7 @@ By decoupling the pipeline architecture into isolated scripts for orchestration,
 
 ### 🏗️ Repository Schema & Data Lineage
 
+```text
 social-media-analytics-capstone/
 │
 ├── data/
@@ -50,14 +52,15 @@ social-media-analytics-capstone/
 │
 ├── src/
 │   └── social_media_analytics/
-│       └── init.py
+│       └── __init__.py
 │
 ├── .gitignore              <-- Credential Masking Boundary
 ├── .python-version
 ├── pyproject.toml          <-- Declarative Project Specifications
 ├── README.md
 └── uv.lock                 <-- Cryptographically Locked Dependency Assertions
-*Note: The `.env` file containing the YouTube Data API key is excluded from GitHub using `.gitignore`.*
+```
+\*Note: The `.env` file containing the YouTube Data API key is excluded from GitHub using `.gitignore`.\*
 
 ### 📊 Ingested Dataset Reference
 The dataset target spans the following eight core predefined search topics:
@@ -101,7 +104,7 @@ Activate your sandboxed runtime environment inside your VSCode terminal:
 ```bash
 source .venv/bin/activate
 ```
-*To leave the boundary later, simply type `deactivate`.*
+\*To leave the boundary later, simply type `deactivate`.\*
 
 ### 3. Configure Secrets & Credentials
 Create a local `.env` file at your root directory level to securely house your access credentials:
@@ -145,4 +148,4 @@ All underlying project packages are declared inside `pyproject.toml` and anchore
 | **Mean Absolute Error (MAE)** | `0.6087` | **`0.5143`** |
 | **Root Mean Squared Error (RMSE)** | `0.7702` | **`0.6461`** |
 
-*The non-linear ensemble algorithm achieved an \(R^2 = 0.5842\), effectively capturing cross-feature interactions and structural variations within multi-topic transaction records that flat linear profiles failed to resolve.*
+\*The non-linear ensemble algorithm achieved an \(R^2 = 0.5842\), effectively capturing cross-feature interactions and structural variations within multi-topic transaction records that flat linear profiles failed to resolve.\*

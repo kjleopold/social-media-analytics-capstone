@@ -143,7 +143,7 @@ A scikit-learn `ColumnTransformer` and `OneHotEncoder` prepare categorical varia
 
 ## Repository Structure
 
-The tree below summarizes the main project folders and files. It intentionally excludes local configuration, virtual-environment files, and the report documents managed separately in Overleaf. File names and generated outputs should reflect what is actually committed to the repository.
+The tree below summarizes the main project folders and files. It intentionally excludes local configuration, virtual-environment files, and the report documents managed separately in Overleaf.
 
 ```text
 social-media-analytics-capstone/

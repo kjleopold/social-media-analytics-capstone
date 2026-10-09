@@ -1,272 +1,115 @@
-# Analyzing the Drivers of Social Media Engagement
+# Multi-Stage ETL Data Pipeline & Predictive Modeling Infrastructure
+**Production-Grade Python Ingestion, Schema Mapping, and Automated Preprocessing Pipeline**
 
-Master of Science in Data Analytics
+## 📋 Architectural Overview
+This repository contains a modular, production-ready **ETL (Extract, Transform, Load) data pipeline** built entirely in Python. The system targets, throttles, and ingests semi-structured JSON payloads from external REST endpoints (YouTube Data API v3), applies rigorous programmatically enforced data validation rules, handles missing data edge cases, and pipes clean data into an automated feature-engineering and predictive machine learning execution framework.
 
-Capstone Project
+[ DATA EXTRACT LAYER ]
+Third-Party REST API Endpoints
+│
+▼ (JSON Streams)
+[ DATA TRANSFORM LAYER ]
+Modular Preprocessing, Schema Enforcement, & Automated Sanitization
+│
+▼ (Valid Partitioned CSVs)
+[ DATA LOAD & MODEL LAYER ]
+Sklearn ColumnTransformer, One-Hot Encoding, & Ensemble Regressors
 
-**Author:** Kellie J. Leopold
+By decoupling the pipeline architecture into isolated scripts for orchestration, transformation, validation, and analytics, this infrastructure mimics modern enterprise data platform systems.
 
-Northwest Missouri State University
-
-Summer 2026
-
-**Project Status:** Completed (Summer 2026)
-
----
-
-## Project Overview
-
-This capstone project examines the relationship between selected YouTube video characteristics and social media engagement using data collected through the YouTube Data API v3. The project follows the complete data analytics lifecycle, including data collection, data preparation and cleaning, exploratory data analysis, data validation, supervised machine learning, and interpretation of results.
-
-Two supervised machine learning models, Linear Regression and Random Forest Regression, were developed and compared to evaluate how effectively selected video characteristics could be used to predict YouTube video engagement.
-
----
-
-## Research Question
-
-**Which YouTube video characteristics are associated with higher levels of social media engagement, and how effectively can machine learning models predict engagement using those characteristics?**
-
----
-
-## Project Objectives
-
-- Collect publicly available YouTube video metadata using the YouTube Data API v3.
-- Prepare, clean, and validate the collected dataset.
-- Explore relationships between selected YouTube video characteristics and engagement.
-- Develop and compare Linear Regression and Random Forest Regression models.
-- Evaluate model performance using the coefficient of determination (R²), Mean Absolute Error (MAE), and Root Mean Squared Error (RMSE).
-- Interpret the findings and discuss the limitations of the study.
+## 🛠️ Core Engineering & Platform Features
+*   **Decoupled Multi-Stage Execution:** Separates processing layers into independent orchestration scripts, ensuring clear data lineage boundaries between raw staging and refined reporting datasets.
+*   **Robust REST API Ingestion & Rate Throttling:** Programmatically manages API connection state, query pagination, and batch execution workflows to securely interface with rate-limited upstream providers.
+*   **Automated Schema Stabilization & Data Quality Controls:** Implements structured exception handling and automated validation rules via `pandas` and `NumPy` to isolate structural anomalies and convert missing data profiles into standard type-safe targets without record drops.
+*   **Modern DevOps & Local Hermeticism:** Utilizes the blisteringly fast, rust-backed `uv` environment coordinator for reproducible lockfile synchronization and complete dependency isolation.
+*   **Secured Secrets Management:** Enforces structural zero-trust configuration via decouple-layer `.env` pattern mapping, permanently masking infrastructure credentials via strict `.gitignore` filters.
+*   **Automated Pipeline Preprocessing:** Leverages Scikit-Learn `ColumnTransformer` arrays to build automated inline normalization matrices, transforming highly skewed metrics using logarithmic smoothing and parsing strings into analytical vectors using one-hot categorical matrix mapping.
 
 ---
 
-# Technologies
+## 📖 Operational Reference & Setup Guide
 
-- Python 3.14
-- uv
-- Git
-- GitHub
-- YouTube Data API v3
-- pandas
-- NumPy
-- Matplotlib
-- scikit-learn
+### 🏗️ Repository Schema & Data Lineage
 
----
-
-# Repository Structure
-
-```text
 social-media-analytics-capstone/
 │
 ├── data/
-│   ├── raw/
-│   │   └── youtube_video_metadata.csv
-│   └── processed/
-│       └── youtube_video_metadata_clean.csv
+│   ├── raw/                <-- Immutable Staging Ingestion Layer (CSV)
+│   └── processed/          <-- Programmatically Validated & Cleaned Core Target (CSV)
 │
 ├── reports/
-│   ├── figures/
-│   └── tables/
+│   ├── figures/            <-- Rendered Linear & Non-Linear Structural Profiles
+│   └── tables/             <-- Evaluated Pipeline Metric Matrices
 │
-├── scripts/
-│   ├── collect_youtube_metadata.py
-│   ├── clean_youtube_data.py
-│   ├── social_media_eda.py
-│   └── social_media_model.py
+├── scripts/                <-- Isolated Component Execution Layer
+│   ├── collect_youtube_metadata.py  <-- Extraction & JSON-to-Tabular Driver
+│   ├── clean_youtube_data.py        <-- Transformation, Anomaly Isolation & Null Fallbacks
+│   ├── social_media_eda.py          <-- Exploratory Validation & Linear Traversal
+│   └── social_media_model.py        <-- Preprocessing Pipeline & Ensemble Training Loop
 │
 ├── src/
 │   └── social_media_analytics/
-│       └── __init__.py
+│       └── init.py
 │
-├── .gitignore
+├── .gitignore              <-- Credential Masking Boundary
 ├── .python-version
-├── pyproject.toml
+├── pyproject.toml          <-- Declarative Project Specifications
 ├── README.md
-└── uv.lock
-```
+└── uv.lock                 <-- Cryptographically Locked Dependency Assertions
+*Note: The `.env` file containing the YouTube Data API key is excluded from GitHub using `.gitignore`.*
 
-> **Note:** The `.env` file containing the YouTube Data API key is excluded from GitHub using `.gitignore`.
+### 📊 Ingested Dataset Reference
+The dataset target spans the following eight core predefined search topics:
+*   Cooking, Fitness, Travel, Finance, Python Programming, Data Analytics, Fortnite, Minecraft
 
----
-
-# Project Workflow
-
-1. Data Collection
-2. Data Preparation and Cleaning
-3. Exploratory Data Analysis
-4. Data Validation
-5. Machine Learning Modeling
-
----
-
-# Data Collection Pipeline
-
-```text
-Load API Key (.env)
-        │
-        ▼
-Create YouTube Client
-        │
-        ▼
-Search Multiple Topics
-        │
-        ▼
-Retrieve Video Metadata and Engagement Statistics
-        │
-        ▼
-Convert Results to Python Dictionaries
-        │
-        ▼
-Create pandas DataFrame
-        │
-        ▼
-Export Raw Dataset
-```
-
-Raw dataset:
-
-```text
-data/raw/youtube_video_metadata.csv
-```
-
-The raw dataset is then cleaned, validated, and exported as:
-
-```text
-data/processed/youtube_video_metadata_clean.csv
-```
-
----
-
-# Dataset
-
-The dataset was collected using the YouTube Data API v3 and includes videos from the following search topics:
-
-- Cooking
-- Fitness
-- Travel
-- Finance
-- Python Programming
-- Data Analytics
-- Fortnite
-- Minecraft
-
-The final dataset contains variables including:
+#### Schema Definition Table:
 
 | Variable | Description |
-|----------|-------------|
-| video_id | Unique YouTube video ID |
-| title | Video title |
-| description | Video description |
-| channel_title | Channel name |
-| published_at | Publication date |
-| search_topic | Search topic used to retrieve the video |
-| view_count | Total views |
-| like_count | Total likes |
-| comment_count | Total comments |
-| duration | Video duration |
-| caption_available | Caption availability |
-| definition | Video definition (HD or SD) |
+| :--- | :--- |
+| **video_id** | Unique YouTube video ID |
+| **title** | Video title |
+| **description** | Video description |
+| **channel_title** | Channel name |
+| **published_at** | Publication date |
+| **search_topic** | Search topic used to retrieve the video |
+| **view_count** | Total views (Target variable) |
+| **like_count** | Total likes |
+| **comment_count** | Total comments |
+| **duration** | Video duration |
+| **caption_available** | Caption availability |
+| **definition** | Video definition (HD or SD) |
 
 ---
 
-# Exploratory Data Analysis
+## ⚙️ Project Infrastructure Setup
 
-Exploratory data analysis was performed to better understand the structure of the dataset before machine learning modeling. Summary statistics, frequency counts, histograms, scatterplots, bar charts, and a correlation heatmap were used to identify patterns and relationships among the collected variables.
-
-Several additional visualizations were created to compare engagement across search topics, video duration groups, caption availability, and video definition.
-
----
-
-# Machine Learning Pipeline
-
-The cleaned dataset was prepared for supervised machine learning by:
-
-- Engineering additional features from the collected data.
-- Converting video duration into minutes.
-- Extracting publication year and publication month.
-- Log-transforming view counts to reduce skewness.
-- One-hot encoding categorical variables.
-- Splitting the dataset into training (80%) and testing (20%) sets.
-- Training Linear Regression and Random Forest Regression models.
-- Evaluating model performance using:
-  - R²
-  - Mean Absolute Error (MAE)
-  - Root Mean Squared Error (RMSE)
-
----
-
-# Results Summary
-
-Two supervised machine learning models were evaluated using the same preprocessing pipeline and testing dataset.
-
-The Random Forest Regression model outperformed the Linear Regression model across all evaluation metrics.
-
-| Metric | Linear Regression | Random Forest |
-|---------|------------------:|--------------:|
-| R² | 0.4092 | 0.5842 |
-| MAE | 0.6087 | 0.5143 |
-| RMSE | 0.7702 | 0.6461 |
-
-The analysis demonstrated that YouTube video engagement is associated with multiple measurable video characteristics. Differences in engagement were observed across search topics and video duration groups, and the Random Forest model provided more accurate predictions than the Linear Regression model. Overall, the project demonstrated the value of combining exploratory data analysis with machine learning to better understand YouTube video engagement.
-
----
-
-# Project Setup
-
-Synchronize dependencies:
-
+### 1. Environment Synchronization
+Install all project dependencies declarations mapped in `pyproject.toml` and compile the `uv.lock` file cleanly using the `uv` environment packager:
 ```bash
 uv sync
 ```
 
-Activate the virtual environment.
+### 2. Activate Local Virtual Boundary
+Activate your sandboxed runtime environment inside your VSCode terminal:
 
-### Windows PowerShell
-
+**Windows PowerShell:**
 ```powershell
 .venv\Scripts\Activate.ps1
 ```
-
-Deactivate:
-
-```powershell
-deactivate
-```
-
----
-
-# Environment Management
-
-Install all dependencies:
-
+**Linux / macOS POSIX:**
 ```bash
-uv sync
+source .venv/bin/activate
 ```
+*To leave the boundary later, simply type `deactivate`.*
 
-Add a package:
-
+### 3. Configure Secrets & Credentials
+Create a local `.env` file at your root directory level to securely house your access credentials:
 ```bash
-uv add <package-name>
+YOUTUBE_API_KEY=YOUR_API_KEY_HERE
 ```
 
-Update all packages:
-
-```bash
-uv sync --upgrade
-```
-
-View installed packages:
-
-```bash
-uv pip list
-```
-
----
-
-# Running the Project
-
-Run the project scripts in the following order:
-
+### 4. Sequential Pipeline Lifecycle Execution
+Run the data system workflows in chronological order to cleanly move from extraction to pipeline metrics evaluation:
 ```bash
 python scripts/collect_youtube_metadata.py
 python scripts/clean_youtube_data.py
@@ -276,78 +119,29 @@ python scripts/social_media_model.py
 
 ---
 
-# YouTube Data API
+## 🛠️ Declarative Environment Management Cheatsheet
+Keep these native `uv project` commands handy for maintaining your package manifest and tracking workspace state:
+*   **Add a package to pyproject.toml:** `uv add <package-name>`
+*   **Remove a dependency:** `uv remove <package-name>`
+*   **Update lockfile & modules:** `uv sync --upgrade`
+*   **Verify environment sync status:** `uv tree`
 
-The YouTube Data API key is stored securely in a `.env` file.
-
-Example:
-
-```text
-YOUTUBE_API_KEY=YOUR_API_KEY
-```
-
-The `.env` file is excluded from version control using `.gitignore` and should never be committed.
-
----
-
-# Git Workflow
-
-Check repository status:
-
-```bash
-git status
-```
-
-Stage changes:
-
-```bash
-git add .
-```
-
-Commit changes:
-
-```bash
-git commit -m "Describe what you completed"
-```
-
-Push changes:
-
-```bash
-git push
-```
-
-View commit history:
-
-```bash
-git log --oneline
-```
+## 📦 System Dependency Manifest
+All underlying project packages are declared inside `pyproject.toml` and anchored using hash-verified references inside `uv.lock`:
+*   `google-api-python-client` (Native API abstract connector)
+*   `python-dotenv` (Runtime context variable parser)
+*   `pandas` & `numpy` (Vectorized data manipulation arrays)
+*   `matplotlib` (Pipeline data reporting visualization)
+*   `scikit-learn` (`ColumnTransformer` pipeline mapping algorithms)
 
 ---
 
-# Dependencies
+## 📈 Pipeline Model Performance Matrix
 
-Managed with **uv**.
+| Performance Metric Matrix | Baseline Linear Regression | Random Forest Ensemble Regressor |
+| :--- | :---: | :---: |
+| **Coefficient of Determination (\(R^2\))** | `0.4092` | **`0.5842`** |
+| **Mean Absolute Error (MAE)** | `0.6087` | **`0.5143`** |
+| **Root Mean Squared Error (RMSE)** | `0.7702` | **`0.6461`** |
 
-- google-api-python-client
-- python-dotenv
-- pandas
-- numpy
-- matplotlib
-- scikit-learn
-
----
-
-# Project Status
-
-## Completed
-
-- ✔ Configure project environment
-- ✔ Connect to the YouTube Data API
-- ✔ Collect YouTube metadata
-- ✔ Clean and validate the dataset
-- ✔ Perform exploratory data analysis
-- ✔ Build Linear Regression model
-- ✔ Build Random Forest Regression model
-- ✔ Evaluate model performance
-- ✔ Generate visualizations
-- ✔ Complete capstone report
+*The non-linear ensemble algorithm achieved an \(R^2 = 0.5842\), effectively capturing cross-feature interactions and structural variations within multi-topic transaction records that flat linear profiles failed to resolve.*
